@@ -52,8 +52,22 @@ Optionally, you can pass the api_key to the constructor when initializing your p
   service.charge(customer: customer_data, address: address_data, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
   ```
 
-  If `order_id` is not provided, an order is created then linked to this payment_intent.
-
+  - If the `order_id` is not provided, an order is automatically created before attempting to charge.
+  - The `method` key could be one of: 
+    - :online => 3DS secure payment 
+    - :kiosk => Kiosk payment
+    - :cash => Cash on delivery
+    - :auth => The "auth" component of auth/capture
+    - :wallet => Vodafone cash
+    - :moto => The "capture" component of auth/capture
+  - The `charge` method's return value varies depedning on the `method`:
+    - :online => of an `iframe_id` is provided, it returns an iframe url, otherwise a payment token
+    - :kiosk => Paymob response body
+    - :cash => Paymob response body
+    - :auth => The "auth" component of auth/capture
+    - :wallet => Vodafone cash
+    - :moto => Paymob response body
+  
 - **Alternatively, you can you create a charge step by step**
 
   - **Step #1 Get auth_token**

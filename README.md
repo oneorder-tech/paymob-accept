@@ -61,7 +61,7 @@ Optionally, you can pass the api_key to the constructor when initializing your p
     - :wallet => Vodafone cash
     - :moto => The "capture" component of auth/capture
   - The `charge` method's return value varies depedning on the `method`:
-    - :online => of an `iframe_id` is provided, it returns an iframe url, otherwise a payment token
+    - :online => if an `iframe_id` is provided, it returns an iframe url, otherwise a payment token
     - :kiosk => Paymob response body
     - :cash => Paymob response body
     - :auth => The "auth" component of auth/capture

@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'paymob_accept'
   spec.version       = PaymobAccept::VERSION
   spec.authors       = ['OneOrder']
-  spec.email         = ['hesham_magdy97@hotmail.com']
+  spec.email         = ['tech@oneorder.net']
 
   spec.summary       = 'Easy integration of Paymob payment gateway'
   spec.description   = 'PaymobAccept is a Ruby gem created by OneOrder tech team for integrating Paymob payment solutions with your Ruby application.'

@@ -1,4 +1,3 @@
-
 # PaymobAccept
 
 `paymob_accept` is a Ruby gem created by [OneOrder](https://www.oneorder.net/) for integrating [Paymob](https://paymob.com/en) payment solutions with your Ruby application.
@@ -40,39 +39,40 @@ Optionally, you can pass the api_key to the constructor when initializing your p
 
 - **Initialize your payment service**
 
-    ```ruby
-    service = PaymobAccept::Api::Pay.new(api_key: api_key) 
-    ```
+  ```ruby
+  service = PaymobAccept::Api::Pay.new(api_key: api_key)
+  ```
 
-- **Charging (All in one step)**
+- **Charging**
 
-    ```ruby
-    customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
-    address_data = {address_line1:  "10 street name", address_line2: "apt x. floor x",  region: "region", city: "Cairo", country: "EG"}
-    service.charge(customer: customer, address: address, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
-    ```
+  ```ruby
+  customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
+  address_data = {address_line1:  "10 street name", address_line2: "apt x. floor x",  region: "region", city: "Cairo", country: "EG"}
+  service.charge(customer: customer, address: address, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
+  ```
 
-    If `order_id` is not provided, an order is created then linked to this payment_intent.
+  If `order_id` is not provided, an order is created then linked to this payment_intent.
 
 </br>
 
-- **Charging (Step by step)**
+- **Alternatively, you can you create a charge step by step**
   <br/>
 
-  - **Step #1  Get auth_token**
+  - **Step #1 Get auth_token**
 
-      ```ruby
-      token =  service.get_auth_token
-      ```
+    ```ruby
+    token =  service.get_auth_token
+    ```
 
   - **Step #2 Create_order**
 
-      ```ruby
-      service.create_order(auth_token: auth_token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
-      ```
+    ```ruby
+    service.create_order(auth_token: auth_token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
+    ```
 
-     `auth_token` is optional if not passed, it will be automatically generated.
+    `auth_token` is optional if not passed, it will be automatically generated.
     </br>
+
     - Items are optional
 
       ```ruby
@@ -88,9 +88,9 @@ Optionally, you can pass the api_key to the constructor when initializing your p
 
   - **Step #3 Create payment key**
 
-      ```ruby
-      service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
-      ```
+    ```ruby
+    service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
+    ```
 
 ---
 
@@ -98,9 +98,9 @@ Optionally, you can pass the api_key to the constructor when initializing your p
 
 - **Initialize your Charge service**
 
-    ```ruby
-    service = PaymobAccept::Api::Charge.new(api_key: api_key) 
-    ```
+  ```ruby
+  service = PaymobAccept::Api::Charge.new(api_key: api_key)
+  ```
 
 - Retrieve transaction `service.charge(transaction_id: transaction_id)`
 - Refund transaction `service.refund!(transaction_id: transaction_id, amount_cents: amount_cents)`

@@ -34,6 +34,8 @@ end
 Optionally, you can pass the api_key to the constructor when initializing your payment service.
 :bulb: You can get your API_KEY from Settings -> Account info -> API Key in your Paymob portal.
 
+---
+
 ### Payment
 
 - **Initialize your payment service**
@@ -42,7 +44,7 @@ Optionally, you can pass the api_key to the constructor when initializing your p
     service = PaymobAccept::Api::Pay.new(api_key: api_key) 
     ```
 
-- **Charging**
+- **Charging (All in one step)**
 
     ```ruby
     customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
@@ -50,44 +52,45 @@ Optionally, you can pass the api_key to the constructor when initializing your p
     service.charge(customer: customer, address: address, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
     ```
 
-    If `order_id` is not provided, an order is created then linked to this payment_intent
+    If `order_id` is not provided, an order is created then linked to this payment_intent.
 
----
+</br>
 
-### Also, You can do it step by step
+- **Charging (Step by step)**
+  <br/>
 
-- **Step #1  Get auth_token**
+  - **Step #1  Get auth_token**
 
-    ```ruby
-    token =  service.get_auth_token
-    ```
+      ```ruby
+      token =  service.get_auth_token
+      ```
 
-- **Step #2 Create_order**
+  - **Step #2 Create_order**
 
-    ```ruby
-    service.create_order(auth_token: auth_token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
-    ```
+      ```ruby
+      service.create_order(auth_token: auth_token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
+      ```
 
-   `auth_token` is optional if not passed, it will be automatically generated.
-  </br>
-  - Items are optional
+     `auth_token` is optional if not passed, it will be automatically generated.
+    </br>
+    - Items are optional
 
-    ```ruby
-    items  =  [{
-        "name":  "xxxxxxx-1",
-        "amount_cents": "5000",
-        "description": "Smart Watch",
-        "quantity": "10"
-    }]
-    ```
+      ```ruby
+      items  =  [{
+          "name":  "xxxxxxx-1",
+          "amount_cents": "5000",
+          "description": "Smart Watch",
+          "quantity": "10"
+      }]
+      ```
 
-  </br>
+    </br>
 
-- **Step #3 Create payment key**
-  
-    ```ruby
-    service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
-    ```
+  - **Step #3 Create payment key**
+
+      ```ruby
+      service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
+      ```
 
 ---
 
@@ -101,7 +104,7 @@ Optionally, you can pass the api_key to the constructor when initializing your p
 
 - Retrieve transaction `service.charge(transaction_id: transaction_id)`
 - Refund transaction `service.refund!(transaction_id: transaction_id, amount_cents: amount_cents)`
-- Void a transaction using `**service**.void!(transaction_id: transaction_id)`
+- Void a transaction using `service.void!(transaction_id: transaction_id)`
 
 ---
 

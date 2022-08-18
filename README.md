@@ -31,6 +31,7 @@ end
 ```
 
 Optionally, you can pass the api_key to the constructor when initializing your payment service.
+
 :bulb: You can get your API_KEY from Settings -> Account info -> API Key in your Paymob portal.
 
 ---
@@ -48,15 +49,12 @@ Optionally, you can pass the api_key to the constructor when initializing your p
   ```ruby
   customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
   address_data = {address_line1:  "10 street name", address_line2: "apt x. floor x",  region: "region", city: "Cairo", country: "EG"}
-  service.charge(customer: customer, address: address, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
+  service.charge(customer: customer_data, address: address_data, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
   ```
 
   If `order_id` is not provided, an order is created then linked to this payment_intent.
 
-</br>
-
 - **Alternatively, you can you create a charge step by step**
-  <br/>
 
   - **Step #1 Get auth_token**
 
@@ -71,7 +69,6 @@ Optionally, you can pass the api_key to the constructor when initializing your p
     ```
 
     `auth_token` is optional if not passed, it will be automatically generated.
-    </br>
 
     - Items are optional
 
@@ -84,15 +81,11 @@ Optionally, you can pass the api_key to the constructor when initializing your p
       }]
       ```
 
-    </br>
-
   - **Step #3 Create payment key**
 
     ```ruby
     service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
     ```
-
----
 
 ## Dealing with charges
 
@@ -102,9 +95,9 @@ Optionally, you can pass the api_key to the constructor when initializing your p
   service = PaymobAccept::Api::Charge.new(api_key: api_key)
   ```
 
-- Retrieve transaction `service.charge(transaction_id: transaction_id)`
-- Refund transaction `service.refund!(transaction_id: transaction_id, amount_cents: amount_cents)`
-- Void a transaction using `service.void!(transaction_id: transaction_id)`
+- Retrieve transaction: `service.charge(transaction_id: transaction_id)`
+- Refund transaction: `service.refund!(transaction_id: transaction_id, amount_cents: amount_cents)`
+- Void a transaction: `service.void!(transaction_id: transaction_id)`
 
 ---
 

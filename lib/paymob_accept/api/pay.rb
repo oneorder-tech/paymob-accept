@@ -3,63 +3,79 @@
 module PaymobAccept
   module Api
     class Pay < Base
-      def initialize(api_key: PaymobAccept.configuration.api_key)
+      SUPPORTED_PAYMENT_METHODS = %i[online auth kiosk cash wallet moto].freeze
+
+      attr_accessor :api_key, :online_integration_id, :cash_integration_id, :kiosk_integration_id,
+                    :auth_integration_id, :wallet_integration_id, :moto_integration_id
+
+      def initialize(api_key: PaymobAccept.configuration.api_key, online_integration_id: PaymobAccept.configuration.online_integration_id, cash_integration_id: PaymobAccept.configuration.cash_integration_id, kiosk_integration_id: PaymobAccept.configuration.kiosk_integration_id,
+                     auth_integration_id: PaymobAccept.configuration.auth_integration_id, wallet_integration_id: PaymobAccept.configuration.wallet_integration_id, moto_integration_id: PaymobAccept.configuration.moto_integration_id)
         super(api_key: api_key)
+        @api_key = api_key
+        @online_integration_id = online_integration_id
+        @cash_integration_id = cash_integration_id
+        @kiosk_integration_id = kiosk_integration_id
+        @auth_integration_id = auth_integration_id
+        @wallet_integration_id = wallet_integration_id
+        @moto_integration_id = moto_integration_id
       end
 
-      def charge(customer:, address:, amount_cents:, integration_id:, method:, amount_currency: 'EGP', order_id: nil, iframe_id: nil, auth_token: get_auth_token)
-        raise ArgumentError, "unsupported payment method #{method}" unless %i[online moto kiosk cash auth
-                                                                              wallet].include? method
+      def charge(method:, **kwargs)
+        raise ArgumentError, "unsupported payment method #{method}" unless SUPPORTED_PAYMENT_METHODS.include? method
 
-        send("pay_#{method}".to_sym,
-             { auth_token: auth_token, customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-               integration_id: integration_id, iframe_id: iframe_id, order_id: order_id })
+        # Override any currencies, only EGP is currently supported
+        kwargs[:amount_currency] = 'EGP'
+        send("pay_#{method}".to_sym, **kwargs)
       end
 
       private
 
-      def request_auth(customer:, address:, amount_cents:, amount_currency:, integration_id:, iframe_id:, order_id:, auth_token:)
+      def pay_auth(customer:, address:, amount_cents:, amount_currency:)
         generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                integration_id: integration_id, iframe_id: iframe_id, order_id: order_id, auth_token: auth_token)
+                                integration_id: auth_integration_id)
       end
 
-      # Returns iFrame URL. The iframe will be prepoulated if the credit card token is provided
-      def pay_online(customer:, address:, amount_cents:, amount_currency:, integration_id:, iframe_id:, order_id:, auth_token:)
+      # Return an iFrame URL if an iframe_id is provided. Otherwise, returns a payment token
+      # The iFrame will be prepoulated with the credit card info if customer[cc_token] is present and is valid stored credit card token on Paymob's server
+      def pay_online(customer:, address:, amount_cents:, amount_currency:, iframe_id: nil)
         generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                integration_id: integration_id, iframe_id: iframe_id, order_id: order_id, auth_token: auth_token)
+                                integration_id: online_integration_id, iframe_id: iframe_id)
       end
 
-      def pay_moto(customer:, address:, amount_cents:, amount_currency:, integration_id:, iframe_id:, order_id:, auth_token:)
+      # Paying MOTO (ie. with a saved card token)
+      def pay_moto(customer:, address:, amount_cents:, amount_currency:)
         if customer[:cc_token].nil?
           raise ArgumentError,
-                'You need to provide a credit card token for moto payments'
+                'You need to provide a credit card token for MOTO payments'
         end
 
         bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                                 integration_id: integration_id, iframe_id: iframe_id, order_id: order_id, auth_token: auth_token)
+                                                 integration_id: auth_integration_id)
         body = {
-          "source": { "subtype": 'TOKEN', "identifier": cc_token },
+          "source": { "subtype": 'TOKEN', "identifier": customer[:cc_token] },
           "payment_token": bill_reference
         }
         @client.request('/acceptance/payments/pay', body)
       end
 
-      def pay_wallet(customer:, address:, amount_cents:, amount_currency:, integration_id:, iframe_id:, order_id:, auth_token:)
-        if customer[:wallet_mobile_number].nil?
+      def pay_wallet(customer:, address:, amount_cents:, amount_currency:)
+        wallet_phone_number = customer[:wallet_phone_number] || customer[:phone_number]
+
+        if wallet_phone_number.nil?
           raise ArgumentError,
                 'You need to provide a mobile number for wallet payments'
         end
 
         bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                                 integration_id: integration_id, iframe_id: iframe_id, order_id: order_id, auth_token: auth_token)
+                                                 integration_id: wallet_integration_id)
         body = {
-          "source": { "subtype": 'WALLET', "identifier": wallet_mobile_number },
+          "source": { "subtype": 'WALLET', "identifier": wallet_phone_number },
           "payment_token": bill_reference
         }
         @client.request('/acceptance/payments/pay', body)
       end
 
-      def pay_cash(customer:, address:, amount_cents:, amount_currency:, integration_id:, iframe_id:, order_id:, auth_token:)
+      def pay_cash(customer:, address:, amount_cents:, amount_currency:)
         if address.nil?
           raise ArgumentError,
                 "Please provide a valid address in options. You must provide those keys: #{address_schema[:required]}"
@@ -67,8 +83,8 @@ module PaymobAccept
 
         address_validator(address)
 
-        bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                                 integration_id: integration_id, iframe_id: iframe_id, order_id: order_id, auth_token: auth_token)
+        bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents,
+                                                 amount_currency: amount_currency, integration_id: cash_integration_id)
         body = {
           "source": { "subtype": 'CASH', "identifier": 'cash' },
           "payment_token": bill_reference
@@ -76,9 +92,9 @@ module PaymobAccept
         @client.request('/acceptance/payments/pay', body)
       end
 
-      def pay_kiosk(customer:, address:, amount_cents:, amount_currency:, integration_id:, iframe_id:, order_id:, auth_token:)
-        bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                                 integration_id: integration_id, iframe_id: iframe_id, order_id: order_id, auth_token: auth_token)
+      def pay_kiosk(customer:, address:, amount_cents:, amount_currency:)
+        bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents,
+                                                 amount_currency: amount_currency, integration_id: kiosk_integration_id)
         body = {
           "source": { "subtype": 'AGGREGATOR', "identifier": 'aggregator' },
           "payment_token": bill_reference

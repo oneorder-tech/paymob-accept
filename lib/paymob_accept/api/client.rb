@@ -2,6 +2,7 @@ module PaymobAccept
   module Api
     class Client
       API_ENDPOINT = 'https://accept.paymobsolutions.com/api'.freeze
+
       def initialize; end
 
       def get(endpoint:, params: {}, headers: {})
@@ -29,8 +30,6 @@ module PaymobAccept
         end
 
         unless response.success?
-          # TODO: Instead of setting the status to failed, this payment intent could be destroyed
-
           message = parsed_body&.dig('message') || response.body || default_error_message
           raise PaymobAccept::Errors::BadGateway.new(message: "code: #{response.status}, gateway response: #{message}")
         end

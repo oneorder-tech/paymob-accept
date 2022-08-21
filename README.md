@@ -126,6 +126,9 @@ The return value of the `charge` method in general is the response of Paymob's s
 - Void a transaction: `service.void!(transaction_id: transaction_id)`
 - Capture an auth transaction: `service.capture!(transaction_id: transaction_id, amount_cents: amount_cents)`
 
+## Roadmap
+
+[] HMAC validation
 
 ## Contributing
 

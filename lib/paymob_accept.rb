@@ -25,6 +25,5 @@ module PaymobAccept
     def configuration
       @configuration ||= Configuration.new
     end
-end
-  # Your code goes here...
+  end
 end

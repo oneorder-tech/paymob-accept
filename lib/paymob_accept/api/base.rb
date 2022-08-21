@@ -1,16 +1,14 @@
 module PaymobAccept
   module Api
     class Base
-      attr_reader :integration_id, :method, :customer, :address
-      attr_accessor :api_key, :iframe_id
+      attr_reader :api_key, :client
 
-      def initialize(api_key: PaymobAccept.configuration.api_key)
+      def initialize(api_key:)
         @client = PaymobAccept::Api::Client.new
         @api_key = api_key
-        @address = address
       end
 
-      # STEP #!
+      # 1. Authentication Request
       def get_auth_token
         response = @client.request('/auth/tokens', { api_key: api_key })
         response['token']
@@ -29,6 +27,7 @@ module PaymobAccept
         @client.request('/ecommerce/orders', body)
       end
 
+      # 3. Payment Key Request
       def generate_payment_intent(customer:, address:, integration_id:, amount_cents:, amount_currency:, iframe_id: nil, order_id: nil, auth_token: get_auth_token)
         if order_id.nil?
           order = create_order(amount_cents: amount_cents, amount_currency: amount_currency)
@@ -39,8 +38,6 @@ module PaymobAccept
 
         format_bill_reference(payment_token, iframe_id)
       end
-
-      # 3. Payment Key Request
 
       private
 
@@ -82,13 +79,13 @@ module PaymobAccept
       def customer_validator(customer)
         JSON::Validator.validate!(customer_schema, customer)
       rescue JSON::Schema::ValidationError => e
-        raise ArgumentError, "Customer field has the following error: #{e.message}"
+        raise ArgumentError, "Customer hash has the following error: #{e.message}"
       end
 
       def address_validator(address)
         JSON::Validator.validate!(address_schema, address)
       rescue JSON::Schema::ValidationError => e
-        raise ArgumentError, "Address field has the following error: #{e.message}"
+        raise ArgumentError, "Address hash has the following error: #{e.message}"
       end
 
       def customer_schema

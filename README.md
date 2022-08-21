@@ -22,67 +22,68 @@ Or install it yourself as:
 
 ### Configuration
 
-Configure the gem with your `api_key`
+Configure the gem with your configuration
 
 ```ruby
 PaymobAccept.configure do |config|
-  config.api_key = YOUR_API_KEY
+	config.api_key = "######"
+	config.online_integration_id = "######"
+	config.kiosk_integration_id = "######"
+	config.cash_integration_id = "######"
+	config.wallet_integration_id = "######"
+	config.auth_integration_id = "######"
+	config.moto_integration_id = "######"
 end
 ```
 
-Optionally, you can pass the api_key to the constructor when initializing your payment service.
+Optionally, any configuration parameters mentioned above could be passed to the constructor when initializing the payment service.
 
 :bulb: You can get your API_KEY from Settings -> Account info -> API Key in your Paymob portal.
 
+For reference on the internals & specifics of Paymob, please head to their official documentation [here](https://docs.paymob.com/)
+
 ---
 
-### Payment
+## Creating a charge:
 
-- **Initialize your payment service**
-
-  ```ruby
-  service = PaymobAccept::Api::Pay.new(api_key: api_key)
-  ```
-
-- **Charging**
-
-  ```ruby
-  customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
-  address_data = {address_line1:  "10 street name", address_line2: "apt x. floor x",  region: "region", city: "Cairo", country: "EG"}
-  service.charge(customer: customer_data, address: address_data, integration_id: 'xxxxx', method: :online, iframe_id: 'xxxxx', amount_cents: 1000, amount_currency: 'EGP', order_id: order_id)
-  ```
-
-  - If the `order_id` is not provided, an order is automatically created before attempting to charge.
-  - The `method` key could be one of: 
-    - :online => 3DS secure payment 
-    - :kiosk => Kiosk payment
-    - :cash => Cash on delivery
-    - :auth => The "auth" component of auth/capture
-    - :wallet => Vodafone cash
-    - :moto => The "capture" component of auth/capture
-  - The `charge` method's return value varies depedning on the `method`:
-    - :online => if an `iframe_id` is provided, it returns an iframe url, otherwise a payment token
-    - :kiosk => Paymob response body
-    - :cash => Paymob response body
-    - :auth => The "auth" component of auth/capture
-    - :wallet => Vodafone cash
-    - :moto => Paymob response body
-  
-- **Alternatively, you can you create a charge step by step**
-
-  - **Step #1 Get auth_token**
+1. Initialize your payment service
 
     ```ruby
-    token =  service.get_auth_token
+    service = PaymobAccept::Api::Pay.new(api_key: api_key, online_integration_id: "12345678")
     ```
 
-  - **Step #2 Create_order**
+2. Prepare your customer data using the following schemas (All fields are required):
 
     ```ruby
-    service.create_order(auth_token: auth_token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
+      customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
+
+      billing_address_data = {address_line1:  "10 street name", address_line2: "apt x. floor x",  region: "region", city: "Cairo", country: "EG"}
+    ```
+3. Create a charge:
+
+    ```ruby
+    service.charge(customer: customer_data, address: billing_address_data, method: :online, iframe_id: 'xxxxx', amount_cents: 1000)
     ```
 
-    `auth_token` is optional if not passed, it will be automatically generated.
+Note. All integration id methods are public and could so it could be easily used to set an integration as:
+
+```ruby
+service.online_integration_id = "123"
+```
+
+&nbsp;
+### Alternatively, you can you create a charge step by step (Not recommended):
+
+1. Authentication request
+
+    ```ruby
+    token = service.get_auth_token
+    ```
+
+2.  Create_order
+    ```ruby
+    service.create_order(auth_token: token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
+    ```
 
     - Items are optional
 
@@ -95,23 +96,41 @@ Optionally, you can pass the api_key to the constructor when initializing your p
       }]
       ```
 
-  - **Step #3 Create payment key**
+3. Create payment key
 
     ```ruby
     service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
     ```
+&nbsp;
 
+## Supported payment methods
+
+The `:method` key in the `charge` method could be one of the following:
+
+- :online => 3D Secure payments with external redirection
+- :auth => Auth/Capture payments
+- :kiosk => Aman/Masary kiosk network
+- :cash => Cash on delivery
+- :wallet => Vodafone cash
+- :moto => Paying with a saved token
+
+Please refer to the official Paymob documentation for in-depth explanation about each payment method.
+
+The return value of the `charge` method in general is the response of Paymob's server which varies according to the payment method except in `:online`. In an `:online` payment if an `iframe_id` is provided, the return value is an iFrame URL with an embedded payment token. If the `iframe_id` is not provided, only the payment token is returned
+
+&nbsp;
 ## Dealing with charges
 
 - **Initialize your Charge service**
 
   ```ruby
-  service = PaymobAccept::Api::Charge.new(api_key: api_key)
+  service = PaymobAccept::Api::Charge.new
   ```
 
 - Retrieve transaction: `service.charge(transaction_id: transaction_id)`
 - Refund transaction: `service.refund!(transaction_id: transaction_id, amount_cents: amount_cents)`
 - Void a transaction: `service.void!(transaction_id: transaction_id)`
+- Capture an auth transaction: `service.capture!(transaction_id: transaction_id, amount_cents: amount_cents)`
 
 ---
 

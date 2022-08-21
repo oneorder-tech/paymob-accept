@@ -10,15 +10,14 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Easy integration of Paymob payment gateway'
   spec.description   = 'PaymobAccept is a Ruby gem created by OneOrder tech team for integrating Paymob payment solutions with your Ruby application.'
-  spec.homepage      = "https://github.com/oneorder-tech/paymob"
+  spec.homepage      = 'https://github.com/oneorder-tech/paymob-accept'
   spec.license       = 'MIT'
-  spec.homepage = 'https://github.com/oneorder-tech/paymob'
+  spec.homepage = 'https://github.com/oneorder-tech/paymob-accept'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
 
-
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['source_code_uri'] = 'https://github.com/oneorder-tech/paymob'
-  spec.metadata['changelog_uri'] = 'https://github.com/oneorder-tech/paymob'
+  spec.metadata['source_code_uri'] = 'https://github.com/oneorder-tech/paymob-accept'
+  spec.metadata['changelog_uri'] = 'https://github.com/oneorder-tech/paymob-accept'
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }

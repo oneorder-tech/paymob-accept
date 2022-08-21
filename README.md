@@ -128,7 +128,7 @@ The return value of the `charge` method in general is the response of Paymob's s
 
 ## Roadmap
 
-[] HMAC validation
+- [ ] HMAC validation
 
 ## Contributing
 

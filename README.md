@@ -42,8 +42,6 @@ Optionally, any configuration parameters mentioned above could be passed to the 
 
 For reference on the internals & specifics of Paymob, please head to their official documentation [here](https://docs.paymob.com/)
 
----
-
 ## Creating a charge:
 
 1. Initialize your payment service
@@ -56,7 +54,6 @@ For reference on the internals & specifics of Paymob, please head to their offic
 
     ```ruby
       customer_data = {name:  "test",  email:  "test@test.com",  phone_number:  "01000000000"}
-
       billing_address_data = {address_line1:  "10 street name", address_line2: "apt x. floor x",  region: "region", city: "Cairo", country: "EG"}
     ```
 3. Create a charge:
@@ -71,7 +68,6 @@ Note. All integration id methods are public and could so it could be easily used
 service.online_integration_id = "123"
 ```
 
-&nbsp;
 ### Alternatively, you can you create a charge step by step (Not recommended):
 
 1. Authentication request
@@ -101,7 +97,6 @@ service.online_integration_id = "123"
     ```ruby
     service.generate_payment_intent(customer: customer, address: address, integration_id: "xxxxx", amount_cents: amount_cents, amount_currency: "EGP", iframe_id: "xxxxxx", order_id: "xxxxxx")
     ```
-&nbsp;
 
 ## Supported payment methods
 
@@ -118,7 +113,6 @@ Please refer to the official Paymob documentation for in-depth explanation about
 
 The return value of the `charge` method in general is the response of Paymob's server which varies according to the payment method except in `:online`. In an `:online` payment if an `iframe_id` is provided, the return value is an iFrame URL with an embedded payment token. If the `iframe_id` is not provided, only the payment token is returned
 
-&nbsp;
 ## Dealing with charges
 
 - **Initialize your Charge service**
@@ -132,7 +126,6 @@ The return value of the `charge` method in general is the response of Paymob's s
 - Void a transaction: `service.void!(transaction_id: transaction_id)`
 - Capture an auth transaction: `service.capture!(transaction_id: transaction_id, amount_cents: amount_cents)`
 
----
 
 ## Contributing
 

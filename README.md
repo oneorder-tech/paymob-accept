@@ -76,7 +76,7 @@ service.online_integration_id = "123"
     token = service.get_auth_token
     ```
 
-2.  Create_order
+2.  Create order
     ```ruby
     service.create_order(auth_token: token, amount_cents:  1000,  amount_currency:  'EGP', items:  [])
     ```

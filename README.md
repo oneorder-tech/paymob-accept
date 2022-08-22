@@ -27,6 +27,7 @@ Configure the gem with your configuration
 ```ruby
 PaymobAccept.configure do |config|
 	config.api_key = "######"
+	config.hmac_key = "######"
 	config.online_integration_id = "######"
 	config.kiosk_integration_id = "######"
 	config.cash_integration_id = "######"
@@ -130,9 +131,13 @@ To pre-fill an iFrame with a customer card data or process a MOTO charge, make s
 - Void a transaction: `service.void!(transaction_id: transaction_id)`
 - Capture an auth transaction: `service.capture!(transaction_id: transaction_id, amount_cents: amount_cents)`
 
+## HMAC validation
+
+- Usage `PaymobAccept::Hmac.validate(paymob_response)`
+
 ## Roadmap
 
-- [ ] HMAC validation
+- [x] HMAC validation
 
 ## Contributing
 

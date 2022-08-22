@@ -9,6 +9,7 @@ require 'paymob_accept/api/pay'
 require 'paymob_accept/api/client'
 require 'paymob_accept/api/charge'
 
+require 'paymob_accept/hmac'
 require 'json'
 require 'faraday'
 require 'faraday/net_http'

@@ -6,17 +6,14 @@ module PaymobAccept
                        pending source_data.pan source_data.sub_type source_data.type success].freeze
 
     class << self
-      def validate(paymob_response)
-        if PaymobAccept.configuration.hmac_key.nil?
-          raise ConfigurationMissingError,
-                'Please, add hmac_key to your configuration block'
-        end
+      def validate(paymob_response:, hmac_key: PaymobAccept.configuration.hmac_key)
+        raise ArgumentError, 'hmac_key is required' if hmac_key.nil?
 
         digest = OpenSSL::Digest.new('sha512')
         concatenated_str = FILTERED_KEYS.map do |element|
           paymob_response.dig('obj', *element.split('.'))
         end.join
-        secure_hash = OpenSSL::HMAC.hexdigest(digest, PaymobAccept.configuration.hmac_key, concatenated_str)
+        secure_hash = OpenSSL::HMAC.hexdigest(digest, hmac_key, concatenated_str)
         secure_hash == paymob_response['hmac']
       end
     end

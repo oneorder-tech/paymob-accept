@@ -133,7 +133,10 @@ To pre-fill an iFrame with a customer card data or process a MOTO charge, make s
 
 ## HMAC validation
 
-- Usage `PaymobAccept::Hmac.validate(paymob_response)`
+`PaymobAccept::Hmac.validate(paymob_response: , hmac_key:)`
+
+`hmac_key` can be either passed once to the configuration block, otherwise, it must be passed to the `validate` function.
+
 
 ## Roadmap
 

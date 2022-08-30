@@ -26,14 +26,14 @@ Configure the gem with your configuration
 
 ```ruby
 PaymobAccept.configure do |config|
-	config.api_key = "######"
-	config.hmac_key = "######"
-	config.online_integration_id = "######"
-	config.kiosk_integration_id = "######"
-	config.cash_integration_id = "######"
-	config.wallet_integration_id = "######"
-	config.auth_integration_id = "######"
-	config.moto_integration_id = "######"
+    config.api_key = "######"
+    config.hmac_key = "######"
+    config.online_integration_id = "######"
+    config.kiosk_integration_id = "######"
+    config.cash_integration_id = "######"
+    config.wallet_integration_id = "######"
+    config.auth_integration_id = "######"
+    config.moto_integration_id = "######"
 end
 ```
 

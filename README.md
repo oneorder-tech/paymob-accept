@@ -1,4 +1,4 @@
-# PaymobAccept
+# Paymob Accept
 
 `paymob_accept` is a Ruby gem created by [OneOrder](https://www.oneorder.net/) for integrating [Paymob](https://paymob.com/en) payment solutions with your Ruby application.
 

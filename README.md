@@ -1,4 +1,4 @@
-# PaymobAccept
+# Paymob Accept
 
 `paymob_accept` is a Ruby gem created by [OneOrder](https://www.oneorder.net/) for integrating [Paymob](https://paymob.com/en) payment solutions with your Ruby application.
 
@@ -26,13 +26,14 @@ Configure the gem with your configuration
 
 ```ruby
 PaymobAccept.configure do |config|
-	config.api_key = "######"
-	config.online_integration_id = "######"
-	config.kiosk_integration_id = "######"
-	config.cash_integration_id = "######"
-	config.wallet_integration_id = "######"
-	config.auth_integration_id = "######"
-	config.moto_integration_id = "######"
+    config.api_key = "######"
+    config.hmac_key = "######"
+    config.online_integration_id = "######"
+    config.kiosk_integration_id = "######"
+    config.cash_integration_id = "######"
+    config.wallet_integration_id = "######"
+    config.auth_integration_id = "######"
+    config.moto_integration_id = "######"
 end
 ```
 
@@ -130,9 +131,16 @@ To pre-fill an iFrame with a customer card data or process a MOTO charge, make s
 - Void a transaction: `service.void!(transaction_id: transaction_id)`
 - Capture an auth transaction: `service.capture!(transaction_id: transaction_id, amount_cents: amount_cents)`
 
+## HMAC validation
+
+`PaymobAccept::Hmac.validate(paymob_response: , hmac_key:)`
+
+`hmac_key` can be either passed once to the configuration block, otherwise, it must be passed to the `validate` function.
+
+
 ## Roadmap
 
-- [ ] HMAC validation
+- [x] HMAC validation
 
 ## Contributing
 

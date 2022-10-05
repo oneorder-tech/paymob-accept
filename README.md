@@ -112,11 +112,15 @@ The `:method` key in the `charge` method could be one of the following:
 
 Please refer to the official Paymob documentation for in-depth explanation about each payment method.
 
-The return value of the `charge` method in general is the response of Paymob's server which varies according to the payment method except in `:online`. In an `:online` payment if an `iframe_id` is provided, the return value is an iFrame URL with an embedded payment token. If the `iframe_id` is not provided, only the payment token is returned
+The return value of the `charge` method in general is the response of Paymob's server which varies according to the payment method except in `:online`. In an `:online` payment if an `iframe_id` is provided, the return value is an iFrame URL with an embedded payment token. If the `iframe_id` is not provided, only the payment token and order_id is returned
 
 ### Paying with a saved card token
 
-To pre-fill an iFrame with a customer card data or process a MOTO charge, make sure the `customer_data` hash has a `cc_token` key in addition to the fields mentioned above.
+```ruby
+ def pay_moto(customer:, address:, cc_token:, amount_cents:, amount_currency:)
+```
+
+- To pre-fill an iFrame with a customer card data or process a MOTO charge, make sure to pass the `cc_token` key in addition to the fields mentioned above.
 
 ## Dealing with charges
 

@@ -36,15 +36,15 @@ module PaymobAccept
       end
 
       # Return an iFrame URL if an iframe_id is provided. Otherwise, returns a payment token
-      # The iFrame will be prepoulated with the credit card info if customer[cc_token] is present and is valid stored credit card token on Paymob's server
-      def pay_online(customer:, address:, amount_cents:, amount_currency:, iframe_id: nil)
+      # The iFrame will be prepoulated with the credit card info if cc_token is present and is valid stored credit card token on Paymob's server
+      def pay_online(customer:, address:, amount_cents:, amount_currency:, cc_token: nil, iframe_id: nil)
         generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                integration_id: online_integration_id, iframe_id: iframe_id)
+                                integration_id: online_integration_id, iframe_id: iframe_id, cc_token: cc_token)
       end
 
       # Paying MOTO (ie. with a saved card token)
-      def pay_moto(customer:, address:, amount_cents:, amount_currency:)
-        if customer[:cc_token].nil?
+      def pay_moto(customer:, address:, cc_token:, amount_cents:, amount_currency:)
+        if cc_token.nil?
           raise ArgumentError,
                 'You need to provide a credit card token for MOTO payments'
         end
@@ -52,7 +52,7 @@ module PaymobAccept
         bill_reference = generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
                                                  integration_id: auth_integration_id)
         body = {
-          "source": { "subtype": 'TOKEN', "identifier": customer[:cc_token] },
+          "source": { "subtype": 'TOKEN', "identifier": cc_token },
           "payment_token": bill_reference
         }
         @client.request('/acceptance/payments/pay', body)

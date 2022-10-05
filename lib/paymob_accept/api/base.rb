@@ -28,20 +28,20 @@ module PaymobAccept
       end
 
       # 3. Payment Key Request
-      def generate_payment_intent(customer:, address:, integration_id:, amount_cents:, amount_currency:, iframe_id: nil, order_id: nil, auth_token: get_auth_token)
+      def generate_payment_intent(customer:, address:, integration_id:, amount_cents:, amount_currency:, cc_token: nil, iframe_id: nil, order_id: nil, auth_token: get_auth_token)
         if order_id.nil?
           order = create_order(amount_cents: amount_cents, amount_currency: amount_currency)
           order_id = order['id']
         end
         payment_token = generate_payment_key(auth_token: auth_token, customer: customer, address: address, order_id: order_id, amount_cents: amount_cents, amount_currency: amount_currency,
-                                             integration_id: integration_id)
+                                             integration_id: integration_id, cc_token: cc_token)
 
-        format_bill_reference(payment_token, iframe_id)
+        { token: format_bill_reference(payment_token, iframe_id), order_id: order_id }
       end
 
       private
 
-      def generate_payment_key(customer:, address:, amount_cents:, amount_currency:, integration_id:, order_id: nil, auth_token: get_auth_token)
+      def generate_payment_key(customer:, address:, amount_cents:, amount_currency:, integration_id:, cc_token: nil, order_id: nil, auth_token: get_auth_token)
         body = {
           "auth_token": auth_token,
           "amount_cents": amount_cents.to_i,
@@ -65,7 +65,7 @@ module PaymobAccept
           },
           "integration_id": integration_id
         }
-        body['token'] = customer[:cc_token] unless customer[:cc_token].nil?
+        body['token'] = cc_token unless cc_token.nil?
 
         response = @client.request('/acceptance/payment_keys', body)
 
@@ -98,7 +98,6 @@ module PaymobAccept
             "last_name": { "type": 'string' },
             "email": { "type": 'string' },
             "phone_number": { "type": 'string' },
-            "cc_token": { "type": 'string' },
             "wallet_mobile_number": { "type": 'string' }
           },
           "required": %w[email phone_number]

@@ -30,9 +30,9 @@ module PaymobAccept
 
       private
 
-      def pay_auth(customer:, address:, amount_cents:, amount_currency:)
+      def pay_auth(customer:, address:, amount_cents:, amount_currency:, iframe_id: nil, cc_token: nil)
         generate_payment_intent(customer: customer, address: address, amount_cents: amount_cents, amount_currency: amount_currency,
-                                integration_id: auth_integration_id)
+                                integration_id: auth_integration_id, iframe_id: iframe_id, cc_token: cc_token)
       end
 
       # Return an iFrame URL if an iframe_id is provided. Otherwise, returns a payment token

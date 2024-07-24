@@ -1,11 +1,10 @@
 module PaymobAccept
-  module Api
     class Client
-      API_ENDPOINT = 'https://accept.paymobsolutions.com/api'.freeze
+      API_ENDPOINT = PaymobAccept.configuration..freeze
 
       def initialize; end
 
-      def get(endpoint:, params: {}, headers: {})
+      def get(endpoint:, params: {},           : {})
         response = Faraday.get(
           "#{API_ENDPOINT}/#{endpoint}",
           params,
@@ -17,10 +16,15 @@ module PaymobAccept
       end
 
       def request(endpoint, body = {})
+        puts '================'
+        puts endpoint
+        puts '================'
+        
         response = Faraday.post(
           "#{API_ENDPOINT}/#{endpoint.gsub(%r{^/+}, '')}",
           body.to_json,
-          'Content-Type' => 'application/json'
+          'Content-Type' => 'application/json',
+          'Authorization' => "Token #{PaymobAccept.configuration.secret_key}"
         )
 
         begin
@@ -28,7 +32,10 @@ module PaymobAccept
         rescue StandardError => e
           # Manually send the error to Sentry
         end
-
+        puts '================'
+        puts parsed_body
+        puts '================'
+        
         unless response.success?
           message = parsed_body&.dig('message') || response.body || default_error_message
           raise PaymobAccept::Errors::BadGateway.new(message: "code: #{response.status}, gateway response: #{message}")
@@ -55,5 +62,4 @@ module PaymobAccept
                                                                                                                ].include?(response['pending']))))
       end
     end
-  end
 end

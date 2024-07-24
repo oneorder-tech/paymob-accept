@@ -19,6 +19,7 @@ module PaymobAccept
   class Error < StandardError; end
 
   class << self
+    # I should validate integrations here
     def configure
       yield configuration
     end

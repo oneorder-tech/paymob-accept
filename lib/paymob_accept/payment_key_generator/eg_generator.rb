@@ -17,7 +17,7 @@ module PaymobAccept
         body['token'] = cc_token if cc_token
 
         response = client.request('/api/acceptance/payment_keys', body, auth_headers(client))
-        { token: response['token'], transaction_reference: transaction_reference }
+        { token: response['token'], transaction_reference: order_id }
       end
 
       private

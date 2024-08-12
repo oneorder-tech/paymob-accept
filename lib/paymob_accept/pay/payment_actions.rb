@@ -36,6 +36,17 @@ module PaymobAccept
       def auth_headers
         { 'Authorization' => "Bearer #{@client.authorize}" }
       end
+
+      def inquire_with_order_id(order_id:)
+        body = { auth_token: @client.authorize, order_id: order_id }
+        begin
+          @client.request('/api/ecommerce/orders/transaction_inquiry', body, auth_headers)
+        rescue PaymobAccept::Errors::BadGateway => _e
+          @retries ||= 0
+          @retries += 1
+          retry if @retries < 5
+        end
+      end
     end
   end
 end

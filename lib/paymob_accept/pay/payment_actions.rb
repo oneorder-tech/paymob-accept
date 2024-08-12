@@ -44,6 +44,7 @@ module PaymobAccept
         rescue PaymobAccept::Errors::BadGateway => _e
           @retries ||= 0
           @retries += 1
+          sleep 2
           retry if @retries < 5
         end
       end
